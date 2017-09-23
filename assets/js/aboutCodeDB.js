@@ -162,7 +162,7 @@ class AboutCodeDB {
                             })
                             .then(() => {
                                 resolve();
-                                console.log("Add FlattenedRows Progress: "
+                                console.info("Add FlattenedRows Progress: "
                                     + Math.round(j/fileCount*100) + "%");
                             })
                             .catch((e) => reject(e));
@@ -213,7 +213,7 @@ class AboutCodeDB {
                                 .then(() => {
                                     resolve();
                                     if (i % 1000 === 0) {
-                                        console.log("Add Rows Progress: "
+                                        console.info("Add Rows Progress: "
                                             + Math.round(i/fileCount*100) + "%");
                                     }
                                 })
@@ -394,12 +394,11 @@ class AboutCodeDB {
         }, {
             getterMethods: {
                 license_expression: function()  {
-                    return $.map(this.licenses, (license, index) => {
-                       return license.key;
-                    }).join(" AND ");
+                    return $.map(this.licenses, license => license.key)
+                        .join(" AND ");
                 },
                 copyright: function() {
-                    return $.map(this.copyrights, (copyright, index) => {
+                    return $.map(this.copyrights, copyright => {
                         return copyright.statements.join(" ");
                     }).join("\n");
                 }
@@ -673,15 +672,15 @@ class AboutCodeDB {
 
     // [{key: val0}, {key: val1}] => [val0, val1]
     static getValues(array, key) {
-        return $.map(array ? array : [], (elem, i) => {
+        return $.map(array ? array : [], elem => {
             return [elem[key] ? elem[key] : []];
         });
     }
 
     // [{key: [{ nestedKey: val0}], {key: [ nestedKey: val1]}] => [val0, val1]
     static getNestedValues(array, key, nestedKey) {
-        return $.map(array ? array : [], (elem, i) => {
-            return $.map(elem[key] ? elem[key] : [], (nestedElem, i) => {
+        return $.map(array ? array : [], elem => {
+            return $.map(elem[key] ? elem[key] : [], nestedElem => {
                 return [nestedElem[nestedKey] ? nestedElem[nestedKey] : []]
             });
         });

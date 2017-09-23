@@ -357,7 +357,7 @@ AboutCodeDataTable.LOCATION_COLUMN =
 AboutCodeDataTable.COPYRIGHT_COLUMNS =
     [
         {
-            "data": function (row, type, val, meta) {
+            "data": function (row) {
                 return row.copyright_statements.map(statements => {
                     return statements.join("<br/>")
                 }).join("<hr/>");
@@ -368,7 +368,7 @@ AboutCodeDataTable.COPYRIGHT_COLUMNS =
             "visible": true
         },
         {
-            "data": function (row, type, val, meta) {
+            "data": function (row) {
                 return row.copyright_holders.map(holders => {
                     return holders.join("<br/>")
                 }).join("<hr/>");
@@ -379,7 +379,7 @@ AboutCodeDataTable.COPYRIGHT_COLUMNS =
             "visible": false
         },
         {
-            "data": function (row, type, val, meta) {
+            "data": function (row) {
                 return row.copyright_authors.map(authors => {
                     return authors.join("<br/>")
                 }).join("<hr/>");
@@ -444,8 +444,8 @@ AboutCodeDataTable.LICENSE_COLUMNS =
             "data": "license_homepage_url",
             "title": "License Homepage URL",
             "name": "license_homepage_url",
-            "render": function ( data, type, full, meta ) {
-                return $.map(data, function (href, i) {
+            "render": function (data) {
+                return $.map(data, function (href) {
                     return '<a href="'+href+'" target="_blank">'+href+'</a>';
                 }).join("<br>");
             },
@@ -455,8 +455,8 @@ AboutCodeDataTable.LICENSE_COLUMNS =
             "data": "license_text_url",
             "title": "License Text URL",
             "name": "license_text_url",
-            "render": function ( data, type, full, meta ) {
-                return $.map(data, function (href, i) {
+            "render": function (data) {
+                return $.map(data, function (href) {
                     return '<a href="'+href+'" target="_blank">'+href+'</a>';
                 }).join("<br>");
             },
@@ -466,8 +466,8 @@ AboutCodeDataTable.LICENSE_COLUMNS =
             "data": "license_djc_url",
             "title": "DejaCode License URL",
             "name": "license_djc_url",
-            "render": function ( data, type, full, meta ) {
-                return $.map(data, function (href, i) {
+            "render": function (data) {
+                return $.map(data, function (href) {
                     return '<a href="'+href+'" target="_blank">'+href+'</a>';
                 }).join("<br>");
             },
@@ -523,8 +523,8 @@ AboutCodeDataTable.URL_COLUMNS =
             "data": "url",
             "title": "URL",
             "name": "url",
-            "render": function ( data, type, full, meta ) {
-                return $.map(data, function (href, i) {
+            "render": function (data) {
+                return $.map(data, function (href) {
                     return '<a href="'+href+'" target="_blank">'+href+'</a>';
                 }).join("<br>");
             },
@@ -709,7 +709,7 @@ AboutCodeDataTable.PACKAGE_COLUMNS =
             "visible": false
         },
         {
-            "data": function (row, type, val, meta) {
+            "data": function (row) {
                 return row.packages_download_urls.map(urls => {
                     return urls.map(url => {
                          return '<a href="'+url+'" target="_blank">'+url+'</a>';

@@ -16,8 +16,22 @@
 
 
 const fs = require('fs');
-const shell = require("electron").shell;
+const electron = require("electron");
+const shell = electron.shell;
 
+// The electron library for opening a dialog
+const dialog = electron.remote.dialog;
+
+// The Electron module used to communicate asynchronously from
+// a renderer process to the main process.
+const ipcRenderer = electron.ipcRenderer;
+
+const AboutCodeDB = require("./aboutCodeDB.js");
+const AboutCodeNodeView = require("./aboutCodeNodeView.js");
+const AboutCodeBarChart = require("./aboutCodeBarChart.js");
+const AboutCodeDataTable = require("./aboutCodeDataTables.js");
+const Split = require("./split.js");
+const uploadComponents = require("./export-to-dejacode.js").uploadComponents;
 
 $(document).ready(function () {
     // Create default values for all of the data and ui classes
@@ -56,9 +70,9 @@ $(document).ready(function () {
             },
             "plugins": [ "types", "sort", "contextmenu", "wholerow"],
             "sort": function (a, b) {
-                a1 = this.get_node(a);
-                b1 = this.get_node(b);
-                if (a1.type == b1.type) {
+                const a1 = this.get_node(a);
+                const b1 = this.get_node(b);
+                if (a1.type === b1.type) {
                     return a1.text.localeCompare(b1.text, 'en-US-u-kf-upper');
                 }
                 else {
@@ -89,7 +103,7 @@ $(document).ready(function () {
                 'fa fa-folder fa_custom');
         })
         // Select the root node when the tree is refreshed
-        .on('refresh.jstree', function (evt, data) {
+        .on('refresh.jstree', function () {
             let rootNode = jstree.jstree('get_node', '#').children;
             jstree.jstree('select_node', rootNode);
         })
@@ -103,12 +117,6 @@ $(document).ready(function () {
             nodeView.setRoot(data.node.id);
             barChart.showSummary(barChartValue, data.node.id);
         });
-
-    // The electron library for opening a dialog
-    const dialog = require('electron').remote.dialog;
-
-    // The Electron module used to communicate asynchronously from a renderer process to the main process.
-    const ipcRenderer = require('electron').ipcRenderer;
 
     // Setup css styling for sidebar button state when clicked.
     const navButtons = $("#sidebar-wrapper").find(".btn-change");
@@ -155,6 +163,10 @@ $(document).ready(function () {
     const resetZoomButton = $("#reset-zoom");
     const leftCol = $("#leftCol");
     const tabBar = $("#tabbar");
+
+    // Defines progressbar
+    const dbIndicator = $("#db-indicator");
+    const indicatorText = $("#indicator-text");
 
     // Defines DOM element constants for the main view containers.
     const nodeContainer = $("#node-container");
@@ -328,9 +340,7 @@ $(document).ready(function () {
 
         // update select2 selectors for node view component
         componentModal.license.html('').select2({
-            data: $.unique($.map(licenses, (license, i) => {
-                return license.key;
-            })),
+            data: $.unique($.map(licenses, license => license.key)),
             multiple: true,
             placeholder: "Enter license",
             tags: true
@@ -345,9 +355,7 @@ $(document).ready(function () {
         }, true);
 
         componentModal.copyright.html('').select2({
-            data: $.unique($.map(copyrights, (copyright, i) => {
-                return copyright.statements;
-            })),
+            data: $.unique($.map(copyrights, copyright => copyright.statements)),
             multiple: true,
             placeholder: "Enter copyright",
             tags: true
@@ -468,7 +476,7 @@ $(document).ready(function () {
         try {
             splitSizes = JSON.parse(sessionStorage.getItem('splitSizes')) || splitSizes;
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
         splitter.setSizes(splitSizes);
     }
@@ -703,7 +711,7 @@ $(document).ready(function () {
                             })
                             .catch((err) => {
                                 hideProgressIndicator();
-                                console.log(err);
+                                console.error(err);
                                 alert(`Error: ${err.message ? err.message : err}`);
                             });
                     });
@@ -723,18 +731,18 @@ $(document).ready(function () {
 
     // Show database creation indicator and hide table view
     function showProgressIndicator() {
-        $("#db-indicator").show();
-        $("#indicator-text").show();
-        $("#tabbar").hide();
-        $("#leftCol").hide();
+        dbIndicator.show();
+        indicatorText.show();
+        tabBar.hide();
+        leftCol.hide();
     }
 
     // Hide database creation indicator and show table view
     function hideProgressIndicator() {
-        $("#tabbar").show();
-        $("#leftCol").show();
-        $("#db-indicator").hide();
-        $("#indicator-text").hide();
+        tabBar.show();
+        leftCol.show();
+        dbIndicator.hide();
+        indicatorText.hide();
     }
 
     // Export JSON file with ScanCode data and components that have been created
@@ -822,7 +830,7 @@ $(document).ready(function () {
                 .then((components) => {
                     // Converts array of components from AboutCode Manager to
                     // DejaCode component format
-                    dejaCodeComponents = $.map(components, (component, index) => {
+                    const dejaCodeComponents = $.map(components, component => {
                         return {
                             name: component.name,
                             version: component.version,

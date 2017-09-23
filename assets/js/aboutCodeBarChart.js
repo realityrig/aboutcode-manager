@@ -73,3 +73,5 @@ class AboutCodeBarChart {
         }
     }
 }
+
+module.exports = AboutCodeBarChart;
