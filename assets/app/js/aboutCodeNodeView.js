@@ -55,7 +55,7 @@ class AboutCodeNodeView {
                 }
             });
 
-        const selectedStatuses = ["Analyzed", "Attention", "Original", "NR"];
+        const selectedStatuses = ["Analyzed", "Attention", "Original", "NR", "Matched"];
 
         $(".status-dropdown-menu a").on("click", event => {
             const target = $(event.currentTarget);

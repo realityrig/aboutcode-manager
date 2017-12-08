@@ -344,6 +344,36 @@ class AboutCodeDB {
                             return this.Component.create(file.component, options);
                         }
                     });
+                })
+                .then(() => {
+                    const packageComponents = $.map(files, file => {
+                        return $.map(file.packages || [], pkg => {
+                            return $.map(pkg.components || [], packageComponent => {
+                                return {
+                                    path: file.path,
+                                    review_status: "Matched",
+                                    name: packageComponent.name,
+                                    version: packageComponent.version,
+                                    licenses: packageComponent.license_expression
+                                        .split(" AND ").map(key => { return { "key": key}; }),
+                                    copyrights: [{
+                                        statements: [packageComponent.copyright]
+                                    }],
+                                    owner: packageComponent.owner_name,
+                                    homepage_url: packageComponent.homepage_url,
+                                    programming_language: packageComponent.primary_language,
+                                    notes: packageComponent.admin_notes,
+                                    fileId: file.id
+                                };
+                            });
+                        });
+                    });
+
+                    return this.sequelize.Promise.each(packageComponents, packageComponent => {
+                        if (packageComponent) {
+                            return this.Component.create(packageComponent, options);
+                        }
+                    });
                 });
             });
     }

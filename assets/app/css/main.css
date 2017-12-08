@@ -125,6 +125,11 @@ body {
   stroke: #a73b8f;
 }
 
+.node circle.Matched {
+  fill: #2BE189;
+  stroke: #2BE189;
+}
+
 .node circle.NR {
   fill: #fff;
   stroke: #000;
